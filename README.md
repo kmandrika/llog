@@ -39,4 +39,6 @@ int main(int argc, char* argv[])
 
 ```
 
+Since this is merely a wrapper around an std::ostream, the default stream is std::cout. It is the responsibility of the consumer to open a file and provide a stream (via `logger.rebind(&stream)`). Rebind is not thread safe, so one needs to call `::stop()`, `::rebind(...)`, and `::start()`.
+
 Llog depends on boost lockfree, which is included in this repo. Since the number of files is quite limited, you can easily change the source to fit your needs. I recommend checking out config.h.
