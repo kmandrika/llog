@@ -1,0 +1,6 @@
+[submodule "lockfree"]
+	path = lockfree
+	url = git://github.com/kmandrika/lockfree.git
+[submodule "atomic"]
+	path = atomic
+	url = git://github.com/kmandrika/atomic.git

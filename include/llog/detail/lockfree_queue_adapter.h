@@ -24,8 +24,7 @@
 #include <llog/config.h>
 
 #include <cstddef>
-#include <boost/lockfree/fifo.hpp>
-#include <boost/scoped_ptr.hpp>
+#include <boost/lockfree/queue.hpp>
 
 namespace llog { namespace detail {
 
@@ -48,7 +47,7 @@ public:
     bool empty() const;
 
 private:
-    boost::lockfree::fifo<message_type *> queue_;
+    boost::lockfree::queue<message_type *> queue_;
 };
 
 }}
@@ -64,27 +63,33 @@ llog::detail::lockfree_queue_adapter<Message>::lockfree_queue_adapter()
 template<typename Message>
 llog::detail::lockfree_queue_adapter<Message>::~lockfree_queue_adapter()
 {
-    boost::scoped_ptr<message_type> message;
+    std::auto_ptr<message_type> message;
     while (dequeue(message)) {}
 }
 
 template<typename Message>
 inline bool llog::detail::lockfree_queue_adapter<Message>::enqueue(message_type* message)
 {
-    return queue_.enqueue(message);
+    return queue_.push(message);
 }
 
 template<typename Message>
 template<typename SmartPtr>
 inline bool llog::detail::lockfree_queue_adapter<Message>::dequeue(SmartPtr& message)
 {
-    return queue_.dequeue(message);
+    Message* dequeued_message = NULL;
+    if (queue_.pop(dequeued_message)) {
+        message.reset(dequeued_message);
+        return true;
+    }
+
+    return false;
 }
 
 template<typename Message>
 inline bool llog::detail::lockfree_queue_adapter<Message>::empty() const
 {
-    return const_cast<boost::lockfree::fifo<message_type *> &>(queue_).empty();
+    return const_cast<boost::lockfree::queue<message_type *> &>(queue_).empty();
 }
 
 #endif /* __LLOG_DETAIL_LOCKFREE_QUEUE_ADAPTER__ */
