@@ -1,7 +1,7 @@
 //! Llog.
 /*!
-    A log layer around std::ostream which offers locked and lock-free, single
-    and multi-threaded regimes. The default ostream is std::cout.
+    A log layer around std::ostream which offers multi-threaded locked and
+    lock-free regimes. The default ostream is std::cout.
 
     Copyright (C) 2012  Konstantin Mandrika
 
